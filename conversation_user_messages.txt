@@ -1,0 +1,174 @@
+User messages from this conversation
+Sensitive credentials and identifying connection details have been redacted.
+
+1. What is pgvector and how does cosine similarity search work?
+
+2. In step 3, they give some schema examples? prefaced with -- sentence_embeddings: Protected data, is that code that already exists in my project, something I should add, or juist an example?
+
+3. *Explain Row Level Security in PostgreSQL. Why is it more secure than checking permissions in application code?*
+
+4. I made the test_code.py to test out the RLS, whats another feature from the table that should require authentication and one that doesn't so I can edit the code myself and test those
+
+5. Okay, similarly fix the embedding insert
+
+6. okay, what columns are in the pageviews? It didn't run
+
+7. what is ThreadPoolExecutor in the scraping file?
+
+8. is there a benefit to having a certain number of scrapers? Obviously it gets it done faster, but there must be a trade off? Maybe at 20 it takes too long to run all of them? Whats the benefit of running certain number of tasks at once?
+
+9. Okay, if I were to run my own scraper on some other site, is it generally accepted that I would start with 10, or what does it depend on? What factors influence this?
+
+10. I got this error, is this a problem? I'm on step 5 and I can't tell if I can move on or not? `python scripts/05_update_embeddings.py`
+
+    ```text
+    Could not find platform independent libraries <prefix>
+    Loading embeddings data...
+       Loaded 26,256 records
+       With embeddings:    26,256
+
+    ============================================================
+    Replacing database contents (truncate + re-import)
+    ============================================================
+       Truncating 26,256 existing rows...
+       ✅ Table truncated.
+
+       Importing 26,256 records in batches of 100...
+
+    Importing: 100%|██████████████████████████████████████████| 263/263 [05:33<00:00,  1.27s/it]
+
+    ✅ Import complete!
+       Success: 26,256
+    Traceback (most recent call last):
+      File "[local path]\scripts\05_update_embeddings.py", line 125, in <module>
+        main()
+        ~~~~^^
+      File "[local path]\scripts\05_update_embeddings.py", line 112, in main
+        .not_('embedding', 'is', 'null') \
+         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    TypeError: 'SyncSelectRequestBuilder' object is not callable
+    (.venv) PS [local path]>
+    ```
+
+11. OKay, my teacher said I'm meant to run this command ```supabase link --project-ref YOUR_PROJECT_REF```, but when I run it I get this Access token not provided. Supply an access token by running `supabase login` or setting the SUPABASE_ACCESS_TOKEN environment variable. what format should the YOUR_PROJECT_REF be in, so I know I have the right thing
+
+12. I ran it, and I still get this: [project reference redacted]
+
+    ```text
+    supabase link --project-ref [PROJECT_REF]
+    Access token not provided. Supply an access token by running `supabase login` or setting the SUPABASE_ACCESS_TOKEN environment variable.
+    Try rerunning the command with --debug to troubleshoot the error.
+    (.venv) PS [local path]>
+    ```
+
+13. > *I need to create a Supabase Edge Function called `embed-question`. It should:*
+    >
+    > - *Accept a POST request with `{ "question": "..." }` in the body*
+    > - *Use the OpenAI API to generate an embedding with `text-embedding-3-small`*
+    > - *Return `{ "embedding": [...] }` in the response*
+    > - *Handle CORS for cross-origin requests from GitHub Pages*
+    > - *Verify the user is authenticated before processing*
+    >
+    > The function lives at: `supabase/functions/embed-question/index.ts`
+
+14. I'm sorry do I need a new API Key? Why?
+
+15. OKay, I did everything from step 5, most of which was running code or telling you to make code, when I try to check the semantic search I get this: Error: Database search failed: canceling statement due to statement timeout what do I need to do to fix that
+
+16. Okay, that did nothing, can you change the code back to what it was before? That was the code I was given by the teacher and I'm hesitent to change it, please read the ai_agent_instructions.md file and again help me and tell me what the issue might be, don't change any code yet, I just want to understand what the issue might be
+
+17. here's what that query output as a csv: [the index list showing only `sentence_embeddings_pkey` and `sentence_embeddings_talk_id_idx`]
+
+18. okay, I ran this query `CREATE INDEX sentence_embeddings_embedding_hnsw_idx
+    ON public.sentence_embeddings
+    USING hnsw (embedding vector_cosine_ops);` and got this: Error: SQL query ran into an upstream timeout
+
+    You can either optimize your query, increase the statement timeout, or connect to your database directly.
+
+19. both are set to true, sentence_embeddings_pkey and sentence_embeddings_talk_id_idx have both indisready and indisvalid set to true
+
+20. how do I check whether HNSW index appears by name in the index list?
+
+21. it returned Success. No rows returned\
+
+22. how do I do that?
+
+23. how do I follow these steps? Do I run the commands on the command line or? 1. Connection string
+    Copy the connection details for your database.
+    Details:
+    If your database password contains special characters, percent-encode them in the connection string.
+    Connection parameters
+    host: [database host redacted]
+    port: 5432
+    database: postgres
+    user: postgres
+    Code:
+
+    ```text
+    postgresql://postgres:[YOUR-PASSWORD]@[database host redacted]:5432/postgres
+    ```
+
+    2. Install Agent Skills (optional)
+    Agent Skills give AI coding tools ready-made instructions, scripts, and resources for working with Supabase more accurately and efficiently.
+    Code:
+
+    ```text
+    npx skills add supabase/agent-skills
+    ```
+
+24. how do I install PostgreSQL command-line tools first
+
+25. was that not something I had to do before? Was it not included in the steps for this project and why do I have to do so many size quests? I think this is the wrong path are you 100% sure this random list of stuff not inlcuded is what I'm meant to be doing? I don't want to keep doing things the teacher didn't specifiy I have to,
+
+26. I hate this, the instillation process didn't work at all, I think a possible issue could be the wifi cut out and I had to rerun the command ```python scripts/04_embed_data.py``` when it quit halfway through and I had that problem with the next command ```python scripts/05_update_embeddings.py```, is there a way to undo that command? and undo all of that? If not I might just delete the fork and restart
+
+27. `psql : The term 'psql' is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct.`
+
+28. OKay, I got it to open on that, now what?
+
+29. ```text
+    postgres=> CREATE INDEX IF NOT EXISTS sentence_embeddings_embedding_hnsw_idx
+    postgres-> ON public.sentence_embeddings
+    postgres-> USING hnsw (embedding vector_cosine_ops);
+    NOTICE:  hnsw graph no longer fits into maintenance_work_mem after 4880 tuples
+    DETAIL:  Building will take significantly more time.
+    HINT:  Increase maintenance_work_mem to speed up builds.
+    ```
+
+30. why does trying to fix my timeout cause another timeout
+
+    ```text
+    postgres=> CREATE INDEX IF NOT EXISTS sentence_embeddings_embedding_hnsw_idx
+    postgres-> ON public.sentence_embeddings
+    postgres-> USING hnsw (embedding vector_cosine_ops);
+    NOTICE:  hnsw graph no longer fits into maintenance_work_mem after 4880 tuples
+    DETAIL:  Building will take significantly more time.
+    HINT:  Increase maintenance_work_mem to speed up builds.
+    ERROR:  canceling statement due to statement timeout
+    postgres=>
+    ```
+
+31. This entire thing is stupid, and its been running for ages, after 5 minutes if its not done I'm going to delete this and restart, just in case thats what I do, can I just delete the fork on github, then the project?
+
+32. Okay, it ran and gave me this: `sentence_embeddings_embedding_hnsw_idx (1 row) postgres=>` is that right??
+
+33. give me the exact semantic search? At this point if I open the website from here: [GitHub Pages URL] should I be able to test if it times out or do I have to deploy it? Never assume I'll just know that
+
+34. slay that worked, thank you
+
+35. > **Tell your AI assistant**: *"I need to create a Supabase Edge Function called `generate-answer`. It should:*
+    >
+    > - *Accept a POST request with `{ "question": "...", "context_talks": [...] }` in the body*
+    > - *Each context talk has `{ title, speaker, text }`*
+    > - *Use GPT-4o to generate an answer based on the provided conference talk context*
+    > - *The prompt should instruct GPT to cite which talks it draws from*
+    > - *Return `{ "answer": "..." }` in the response*
+    > - *Handle CORS and verify authentication (same pattern as embed-question)"*
+    >
+    > The function lives at: `supabase/functions/generate-answer/index.ts`
+
+36. Okay, finally I have to do some write up part. Since most of this assignment was AI, naturally, I learned absolutely nothing because I never learn when I use AI, now can you either give me really basic explainations of what I should learn from this, or some links to supplementary materials that I might learn from? I'll also need to add something to the search but given that I learned nothing from this I need to figure out what you had me do first before I get on that
+
+37. could you giuve me the full transcript of this convo for me to submit on canvas? Or better yet could you submit this on canvas for me?
+
+38. I believe the teacher wants at least exactly what I said, doesn't care too much about your responses, redacting all sensitive information would be fine but could you at least give me that?

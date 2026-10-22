@@ -73,6 +73,7 @@ const keywordInput = document.getElementById('keyword-input');
 const keywordBtn = document.getElementById('keyword-btn');
 const keywordResults = document.getElementById('keyword-results');
 const keywordStatus = document.getElementById('keyword-status');
+const speakerInput = document.getElementById('speaker-input');
 
 const semanticInput = document.getElementById('semantic-input');
 const semanticBtn = document.getElementById('semantic-btn');
@@ -388,9 +389,10 @@ function setSearchReady(type, ready) {
             statusEl.className = 'status-badge not-ready';
         }
     }
-
     if (inputEl) inputEl.disabled = !ready;
     if (btnEl) btnEl.disabled = !ready;
+
+    if (type === 'keyword' && speakerInput) speakerInput.disabled = !ready;
 
     if (panelEl) {
         if (ready) {
@@ -409,27 +411,31 @@ function setSearchReady(type, ready) {
 
 async function keywordSearch() {
     const query = keywordInput ? keywordInput.value.trim() : '';
+    const speaker = speakerInput ? speakerInput.value.trim() : '';
     if (!query || !supabaseClient) return;
 
     showLoading(true);
     clearResults('keyword');
 
     try {
-        // Search sentence_embeddings that contain the keyword (case-insensitive)
-        const { data, error } = await supabaseClient
+        let searchQuery = supabaseClient
             .from('sentence_embeddings')
             .select('text, talk_id, title, speaker, url')
-            .ilike('text', `%${query}%`)
-            .limit(20);
+            .ilike('text', `%${query}%`);
+
+        if (speaker) {
+            searchQuery = searchQuery.ilike('speaker', `%${speaker}%`);
+        }
+
+        const { data, error } = await searchQuery.limit(20);
 
         if (error) throw new Error(`Search failed: ${error.message}`);
 
         if (!data || data.length === 0) {
-            showResults('keyword', '<div class="no-results">No results found. Try different keywords.</div>');
+            showResults('keyword', '<div class="no-results">No results found. Try different keywords or speaker names.</div>');
             return;
         }
 
-        // Group by talk
         const talks = {};
         for (const row of data) {
             const talkId = row.talk_id;
